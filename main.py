@@ -38,8 +38,8 @@ class AutoPullHook(AbstractWebHook):
     def on_push(self, payload):
         info("Repo push hook.")
         repoInfo = json.loads(payload)
-        name = repoInfo["repository"]["name"]
-        if str(name).lower() in config.repos:
+        name = str(repoInfo["repository"]["name"]).lower()
+        if name in config.repos:
             try:
                 path = config.repos[name].path
                 if not os.path.exists(path):
@@ -60,9 +60,10 @@ class AutoPullHook(AbstractWebHook):
                         url = repoInfo["repository"]["url"]
                         info("Cloning from url:{}".format(url))
                         Repo.clone_from(url, config.repos[name].path)
-
+# /usr/src/app
 if __name__ == '__main__':
     info("Started server on port:{}".format(PORT))
+    info("version 1.0")
     app = tornado.web.Application()
 
     WebHookInjector.inject("/webhooks", app, AutoPullHook, u'{}'.format(config.settings.secret))

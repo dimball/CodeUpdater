@@ -10,3 +10,64 @@ Doing it from here will at least ensure that if the code fails, the updating can
 it will also need to know about how to restart the specific application (which is dockerised) by using a http GET command
 which means the app needs to have a small webserver interface like tornado or flask or something.
 '''
+import tornado.web
+import tornado.ioloop
+from modules.WebHook import AbstractWebHook, WebHookInjector
+import git
+from git import Repo
+import json
+import os
+import logging
+from logging import info
+from modules.config import Configuration
+logging.basicConfig(level=logging.INFO)
+
+config = Configuration()
+PORT = 8087
+
+
+class WebHook(AbstractWebHook):
+
+    def on_push(self, payload):
+        print("on_push")
+
+class AutoPullHook(AbstractWebHook):
+    def __init__(self):
+        super().__init__()
+
+    def on_push(self, payload):
+        info("Repo push hook.")
+        repoInfo = json.loads(payload)
+        name = repoInfo["repository"]["name"]
+        if str(name).lower() in config.repos:
+            try:
+                path = config.repos[name].path
+                if not os.path.exists(path):
+                    os.mkdir(path)
+                Repo(config.repos[name].path)
+                g = git.Git(config.repos[name].path)
+                g.pull('origin', 'master')
+            except git.InvalidGitRepositoryError:
+                if len(os.listdir(config.repos[name].path)) is not 0:
+                    info("Repo:{} is not under git. Cannot clone before the folder is empty")
+                else:
+                    bPath = True
+                    if not os.path.exists(config.repos[name].path):
+                        info("Creating path:{}".format(config.repos[name].path))
+                        bPath = os.mkdir(config.repos[name].path)
+
+                    if bPath:
+                        url = repoInfo["repository"]["url"]
+                        info("Cloning from url:{}".format(url))
+                        Repo.clone_from(url, config.repos[name].path)
+
+if __name__ == '__main__':
+    info("Started server on port:{}".format(PORT))
+    app = tornado.web.Application()
+
+    WebHookInjector.inject("/webhooks", app, AutoPullHook, u'{}'.format(config.settings.secret))
+    try:
+        app.listen(PORT)
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        info("Exiting codeupdater")

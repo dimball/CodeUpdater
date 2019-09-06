@@ -9,5 +9,5 @@ RUN apt-get update && \
 apt-get install git
 
 COPY . .
-
-CMD [ "python", "./main.py" ]
+WORKDIR /usr/src/app
+CMD [ "python", "./modules/main.py" ]

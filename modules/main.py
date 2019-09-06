@@ -12,14 +12,14 @@ which means the app needs to have a small webserver interface like tornado or fl
 '''
 import tornado.web
 import tornado.ioloop
-from modules.WebHook import AbstractWebHook, WebHookInjector
+from WebHook import AbstractWebHook, WebHookInjector
 import git
 from git import Repo
 import json
 import os
 import logging
 from logging import info
-from modules.config import Configuration
+from config import Configuration
 logging.basicConfig(level=logging.INFO)
 
 config = Configuration()

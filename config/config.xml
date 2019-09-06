@@ -3,7 +3,7 @@
         <secret>the secret</secret>
     </settings>
     <repos>
-        <repo name="CodeUpdater" path="./"/>
-        <repo name="Trackster" path="./projects/Trackster"/>
+        <repo name="CodeUpdater" path="../"/>
+        <repo name="Trackster" path="../projects/Trackster"/>
     </repos>
 </config>

@@ -63,7 +63,7 @@ class AutoPullHook(AbstractWebHook):
 # /usr/src/app
 if __name__ == '__main__':
     info("Started server on port:{}".format(PORT))
-    info("version 1.1")
+    info("version 1.0")
     app = tornado.web.Application()
 
     WebHookInjector.inject("/webhooks", app, AutoPullHook, u'{}'.format(config.settings.secret))

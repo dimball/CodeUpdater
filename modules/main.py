@@ -45,7 +45,7 @@ class AutoPullHook(AbstractWebHook):
                 if not os.path.exists(path):
                     os.mkdir(path)
                 repo = git.Repo(config.repos[name].path)
-                repo.git.refresh('--hard', 'origin/master')
+                repo.git.reset('--hard', 'origin/master')
                 # g = git.Git(config.repos[name].path)
                 #
                 # g.pull('origin', 'master')

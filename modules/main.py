@@ -49,7 +49,7 @@ class AutoPullHook(AbstractWebHook):
                 g.pull('origin', 'master')
             except git.InvalidGitRepositoryError:
                 if len(os.listdir(config.repos[name].path)) is not 0:
-                    info("Repo:{} is not under git. Cannot clone before the folder is empty")
+                    info("Repo:{} is not under git. Cannot clone before the folder is empty").format(config.repos[name].path)
                 else:
                     bPath = True
                     if not os.path.exists(config.repos[name].path):
